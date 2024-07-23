@@ -77,6 +77,9 @@ stages:
       inputs:
         artifact: 'drop'
         path: '$(Pipeline.Workspace)'
+  
+    - script: ls -al $(Pipeline.Workspace)/drop
+      displayName: List files in drop folder (Debugging)
 
     - task: Kubernetes@1
       inputs:
@@ -86,5 +89,35 @@ stages:
         kubernetesCluster: 'rbk8'
         command: 'apply'
         useConfigurationFile: true
-        configuration: '$(Pipeline.Workspace)/drop/'
+        configuration: '$(Pipeline.Workspace)/drop/mssql-configmap.yaml'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: 'Free Trial (41ee97a2-4cba-49cf-8f61-ec4fb9d572aa)'
+        azureResourceGroup: 'Integration1'
+        kubernetesCluster: 'rbk8'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Pipeline.Workspace)/drop/mssql-pv.azure.yaml'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: 'Free Trial (41ee97a2-4cba-49cf-8f61-ec4fb9d572aa)'
+        azureResourceGroup: 'Integration1'
+        kubernetesCluster: 'rbk8'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Pipeline.Workspace)/drop/mssql-secret.yaml'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: 'Free Trial (41ee97a2-4cba-49cf-8f61-ec4fb9d572aa)'
+        azureResourceGroup: 'Integration1'
+        kubernetesCluster: 'rbk8'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Pipeline.Workspace)/drop/mvc-deployment.azure.yaml'
 
