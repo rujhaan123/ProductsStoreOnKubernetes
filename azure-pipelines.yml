@@ -13,7 +13,7 @@ variables:
   dockerRegistryServiceConnection: '755f0dd8-4930-469e-bc5b-e6f6d86cea34'
   imageRepository: 'rujhaanproductsstoreonkubernetes'
   containerRegistry: 'rbdtest.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
+  dockerfilePath: 'MvcApp/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -50,9 +50,41 @@ stages:
           mvc-deployment.azure.yaml
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         CleanTargetFolder: true
+      
+    - script: |
+        sed -i 's|__DOCKER_REPOSITORY__|$(containerRegistry)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
+        sed -i 's|__IMAGE_NAME__|$(imageRepository)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
+        sed -i 's|__IMAGE_TAG__|$(tag)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
+      displayName: Update image references in Kubernetes manifests
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
+
+#deploy  
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: 'drop'
+        path: '$(Pipeline.Workspace)'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: 'Free Trial (41ee97a2-4cba-49cf-8f61-ec4fb9d572aa)'
+        azureResourceGroup: 'Integration1'
+        kubernetesCluster: 'rbk8'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Pipeline.Workspace)/drop/'
+
