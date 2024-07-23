@@ -38,8 +38,10 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
     - task: CopyFiles@2
       inputs:
+        SourceFolder: 'kubernetes'  # Specify the folder containing your files
         Contents: |
           mssql-configmap.yaml
           mssql-deployment.yaml
