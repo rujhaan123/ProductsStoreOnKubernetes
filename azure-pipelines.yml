@@ -39,6 +39,7 @@ stages:
         tags: '$(tag)'
 
     - task: CopyFiles@2
+      displayName: Copy Kubernetes manifests
       inputs:
         SourceFolder: 'kubernetes'
         Contents: |
@@ -48,14 +49,20 @@ stages:
           mssql-secret.yaml
           mvc-deployment.azure.yaml
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - script: |
+        echo "Listing contents of $(Build.ArtifactStagingDirectory):"
+        ls -R $(Build.ArtifactStagingDirectory)
+      displayName: List contents of artifact staging directory for debugging
       
     - script: |
         sed -i 's|__DOCKER_REPOSITORY__|$(containerRegistry)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
         sed -i 's|__IMAGE_NAME__|$(imageRepository)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
         sed -i 's|__IMAGE_TAG__|$(tag)|' $(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml
       displayName: Update image references in Kubernetes manifests
-
+    
     - task: PublishBuildArtifacts@1
+      displayName: Publish build artifacts
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
@@ -76,6 +83,11 @@ stages:
         buildType: 'current'
         artifactName: 'drop'
         targetPath: $'(Build.ArtifactStagingDirectory)'
+      
+    - script: |
+        echo "Listing contents of $(Build.ArtifactStagingDirectory) after downloading artifacts:"
+        ls -R $(Build.ArtifactStagingDirectory)
+      displayName: List contents of artifact staging directory after download for debugging
 
 
     - task: Kubernetes@1
