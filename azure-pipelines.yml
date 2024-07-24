@@ -87,6 +87,15 @@ stages:
         command: 'apply'
         useConfigurationFile: true
         configuration: '$(Build.ArtifactStagingDirectory)/mssql-configmap.yaml'
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: 'Free Trial (41ee97a2-4cba-49cf-8f61-ec4fb9d572aa)'
+        azureResourceGroup: 'Integration1'
+        kubernetesCluster: 'rbk8'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.ArtifactStagingDirectory)/mssql-deployment.yaml'
 
     - task: Kubernetes@1
       inputs:
