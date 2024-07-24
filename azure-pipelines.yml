@@ -86,7 +86,7 @@ stages:
         kubernetesCluster: 'rbk8'
         command: 'apply'
         useConfigurationFile: true
-        configuration: '$(Build.ArtifactStagingDirectory)/drop/mssql-configmap.yaml'
+        configuration: '$(Build.ArtifactStagingDirectory)/mssql-configmap.yaml'
 
     - task: Kubernetes@1
       inputs:
@@ -96,7 +96,7 @@ stages:
         kubernetesCluster: 'rbk8'
         command: 'apply'
         useConfigurationFile: true
-        configuration: '$(Build.ArtifactStagingDirectory)/drop/mssql-pv.azure.yaml'
+        configuration: '$(Build.ArtifactStagingDirectory)/mssql-pv.azure.yaml'
 
 
     - task: Kubernetes@1
@@ -107,7 +107,7 @@ stages:
         kubernetesCluster: 'rbk8'
         command: 'apply'
         useConfigurationFile: true
-        configuration: '$(Build.ArtifactStagingDirectory)/drop/mssql-secret.yaml'
+        configuration: '$(Build.ArtifactStagingDirectory)/mssql-secret.yaml'
 
     - task: Kubernetes@1
       inputs:
@@ -117,5 +117,5 @@ stages:
         kubernetesCluster: 'rbk8'
         command: 'apply'
         useConfigurationFile: true
-        configuration: '$(Build.ArtifactStagingDirectory)/drop/mvc-deployment.azure.yaml'
+        configuration: '$(Build.ArtifactStagingDirectory)/mvc-deployment.azure.yaml'
 
